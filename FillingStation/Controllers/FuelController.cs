@@ -2,19 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FillingStation.DTOs;
+using FillingStation.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FillingStation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class FuelController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private IFuelService _fuelService;
+        public FuelController(IFuelService fuelService)
         {
-            return new string[] { "value1", "value2" };
+            _fuelService = fuelService;
+        }
+        
+        [HttpGet]
+        public async Task<IEnumerable<FuelDTO>> Get()
+        {
+            //await Response.WriteAsync(JsonConvert.SerializeObject(dto, 
+            //new JsonSerializerSettings { Formatting = Formatting.Indented }));
+            return await _fuelService.GetFuel(); ;
         }
 
         // GET api/values/5

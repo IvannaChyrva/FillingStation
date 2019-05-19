@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using FillingStation.Interfaces;
+using FillingStation.MapperProfiles;
+using FillingStation.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,14 +26,20 @@ namespace FillingStation
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-        }
+            services.AddDbContext<StationsDBContext>();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            services.AddCors();
+
+            services.AddTransient<IFuelService, FuelService>();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            InitializeAutomapper(services);
+        }
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -37,12 +48,23 @@ namespace FillingStation
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder.AllowAnyOrigin());
+
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        public virtual IServiceCollection InitializeAutomapper(IServiceCollection services)
+        {
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<FuelProfile>();
+            });
+
+            return services;
         }
     }
 }
