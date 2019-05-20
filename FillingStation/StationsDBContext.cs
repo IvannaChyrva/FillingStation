@@ -24,6 +24,8 @@ namespace FillingStation
         public virtual DbSet<Selling> Selling { get; set; }
         public virtual DbSet<Station> Station { get; set; }
         public virtual DbSet<Storage> Storage { get; set; }
+        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<UserRole> UserRole { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,19 +50,16 @@ namespace FillingStation
                     .HasColumnName("bonuses")
                     .HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.CustomerAddress)
-                    .HasColumnName("customerAddress")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.CustomerName)
+                entity.Property(e => e.UserId)
                     .IsRequired()
-                    .HasColumnName("customerName")
-                    .HasMaxLength(50);
+                    .HasColumnName("userId")
+                    .HasMaxLength(10);
 
-                entity.Property(e => e.CustomerPhone)
-                    .IsRequired()
-                    .HasColumnName("customerPhone")
-                    .HasMaxLength(50);
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Customer)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Customer_User");
             });
 
             modelBuilder.Entity<Employee>(entity =>
@@ -74,10 +73,6 @@ namespace FillingStation
                     .HasColumnName("employeeAdress")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.EmployeeName)
-                    .HasColumnName("employeeName")
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.EmployeePasport)
                     .HasColumnName("employeePasport")
                     .HasMaxLength(50);
@@ -86,26 +81,31 @@ namespace FillingStation
                     .HasColumnName("employeePhone")
                     .HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.EmployeePosition)
-                    .HasColumnName("employeePosition")
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.EmployeeSalery)
                     .HasColumnName("employeeSalery")
                     .HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.EmployeeSurname)
-                    .HasColumnName("employeeSurname")
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.StationId)
+                    .IsRequired()
                     .HasColumnName("stationId")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("userId")
                     .HasMaxLength(10);
 
                 entity.HasOne(d => d.Station)
                     .WithMany(p => p.Employee)
                     .HasForeignKey(d => d.StationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Employee_Station");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Employee)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Employee_User");
             });
 
             modelBuilder.Entity<Fuel>(entity =>
@@ -285,10 +285,6 @@ namespace FillingStation
                     .HasColumnName("storageAmount")
                     .HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.StorageDatetime)
-                    .HasColumnName("storageDatetime")
-                    .HasColumnType("datetime");
-
                 entity.Property(e => e.StoragePrice)
                     .HasColumnName("storagePrice")
                     .HasColumnType("numeric(18, 0)");
@@ -303,6 +299,58 @@ namespace FillingStation
                     .WithMany(p => p.Storage)
                     .HasForeignKey(d => d.StationId)
                     .HasConstraintName("FK_Storage_Station");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.UserId)
+                    .HasColumnName("userId")
+                    .HasMaxLength(10)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.UserEmail)
+                    .IsRequired()
+                    .HasColumnName("userEmail")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasColumnName("userName")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.UserPassword)
+                    .IsRequired()
+                    .HasColumnName("userPassword")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.UserRoleId)
+                    .IsRequired()
+                    .HasColumnName("userRoleId")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.UserSurname)
+                    .IsRequired()
+                    .HasColumnName("userSurname")
+                    .HasMaxLength(10);
+
+                entity.HasOne(d => d.UserRole)
+                    .WithMany(p => p.User)
+                    .HasForeignKey(d => d.UserRoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_UserRole");
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(e => e.UserRoleId)
+                    .HasColumnName("userRoleId")
+                    .HasMaxLength(10)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.UserRole1)
+                    .IsRequired()
+                    .HasColumnName("userRole")
+                    .HasMaxLength(20);
             });
         }
     }

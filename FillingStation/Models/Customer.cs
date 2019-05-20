@@ -11,11 +11,10 @@ namespace FillingStation
         }
 
         public string CustomerId { get; set; }
-        public string CustomerName { get; set; }
-        public string CustomerPhone { get; set; }
-        public string CustomerAddress { get; set; }
+        public string UserId { get; set; }
         public decimal? Bonuses { get; set; }
 
+        public virtual User User { get; set; }
         public virtual ICollection<Selling> Selling { get; set; }
     }
 }

@@ -6,9 +6,7 @@ namespace FillingStation
     public partial class Employee
     {
         public string EmployeeId { get; set; }
-        public string EmployeeName { get; set; }
-        public string EmployeeSurname { get; set; }
-        public string EmployeePosition { get; set; }
+        public string UserId { get; set; }
         public string EmployeePasport { get; set; }
         public decimal? EmployeeSalery { get; set; }
         public string EmployeeAdress { get; set; }
@@ -16,5 +14,6 @@ namespace FillingStation
         public string StationId { get; set; }
 
         public virtual Station Station { get; set; }
+        public virtual User User { get; set; }
     }
 }

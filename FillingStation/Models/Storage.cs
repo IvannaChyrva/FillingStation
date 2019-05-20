@@ -14,7 +14,6 @@ namespace FillingStation
         public string FuelId { get; set; }
         public decimal StorageAmount { get; set; }
         public decimal? StoragePrice { get; set; }
-        public DateTime? StorageDatetime { get; set; }
         public string StationId { get; set; }
 
         public virtual Fuel Fuel { get; set; }
